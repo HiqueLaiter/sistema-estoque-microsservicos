@@ -1,0 +1,85 @@
+# Sistema de Controle e Análise de Estoque: três microsserviços + (depois) frontend.
+# Subir tudo:  docker compose up --build
+# Parar:       docker compose down        (os dados continuam salvos no volume)
+# Apagar dados: docker compose down -v    (remove também o volume)
+
+services:
+  servico-dados:
+    build: ./servico-dados
+    environment:
+      # Dentro do contêiner o banco fica em /dados, que é o volume persistente
+      DB_PATH: /dados/estoque.db
+    volumes:
+      - dados-estoque:/dados
+    healthcheck:
+      # Imagem slim não tem curl; usamos o próprio Python para consultar /health
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5001/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    # TEMPORÁRIO: publicado só para testar pelo PowerShell antes de existir o frontend.
+    # Quando o frontend (nginx) estiver pronto, esta porta deixa de ser publicada.
+    ports:
+      - "5001:5001"
+    networks:
+      - rede-estoque
+
+  servico-processamento:
+    build: ./servico-processamento
+    environment:
+      # Nome do serviço = endereço de rede dentro do Compose
+      DADOS_URL: http://servico-dados:5001
+    depends_on:
+      servico-dados:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5002/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    # Sem "ports": só é acessível por outros contêineres da rede interna
+    networks:
+      - rede-estoque
+
+  servico-relatorios:
+    build: ./servico-relatorios
+    environment:
+      DADOS_URL: http://servico-dados:5001
+      PROCESSAMENTO_URL: http://servico-processamento:5002
+    depends_on:
+      servico-dados:
+        condition: service_healthy
+      servico-processamento:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5003/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    ports:
+      - "5003:5003"
+    networks:
+      - rede-estoque
+
+  frontend:
+    build: ./frontend
+    # O nginx resolve os nomes dos serviços ao iniciar; por isso espera ficarem saudáveis
+    depends_on:
+      servico-dados:
+        condition: service_healthy
+      servico-relatorios:
+        condition: service_healthy
+    # Única porta que o usuário precisa: http://localhost:8080
+    ports:
+      - "8080:80"
+    networks:
+      - rede-estoque
+
+networks:
+  rede-estoque:
+
+volumes:
+  dados-estoque:
