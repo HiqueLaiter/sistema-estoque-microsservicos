@@ -1,4 +1,5 @@
-"""Serviço de Dados: persiste produtos e movimentações (SQLite) e expõe uma API HTTP/JSON."""
+"""Serviço de Dados: persiste produtos e movimentações (SQLite) e 
+    expõe uma API HTTP/JSON."""
 from datetime import datetime
 
 from flask import Flask, jsonify, request
@@ -15,7 +16,7 @@ def erro(mensagem, status):
 
 
 def eh_inteiro(valor):
-    # bool é subclasse de int em Python; não aceitamos true/false como número
+    # bool é subclasse de int em Python; não aceita true/false como número
     return isinstance(valor, int) and not isinstance(valor, bool)
 
 

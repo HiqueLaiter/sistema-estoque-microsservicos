@@ -1,4 +1,5 @@
-"""Acesso ao banco SQLite. Somente o Serviço de Dados usa este módulo."""
+"""Acesso ao banco SQLite.
+   Somente o Serviço de Dados usa este módulo."""
 import os
 import sqlite3
 
