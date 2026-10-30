@@ -1,8 +1,8 @@
 # Sistema de Controle e Análise de Estoque com Microsserviços
 
-Projeto acadêmico da disciplina de **Arquitetura Orientada a Serviços (SOA)** ("Atividade para Nota 2").
-Simula uma pequena loja que cadastra produtos, registra entradas e saídas de estoque, calcula o saldo
-de cada produto e gera relatórios para apoiar a gestão. Todos os dados são **fictícios**: não há
+Projeto acadêmico da disciplina de **Arquitetura Orientada a Serviços**.
+Aqui simulamos uma pequena loja que cadastra produtos, registra entradas e saídas de estoque, calcula o saldo
+de cada produto e gera relatórios para apoiar a gestão. Todos os dados são **fictícios** e não há
 integração com nenhuma loja real.
 
 O objetivo não é um sistema comercial completo, e sim demonstrar, de forma funcional, separação de
@@ -180,24 +180,6 @@ sistema-estoque/
     └── app.py
 ```
 
-## Executando sem Docker (opcional, para desenvolvimento)
-
-Requer Python 3.10 ou superior. Cada serviço roda em um terminal próprio, dentro da sua pasta. Exemplo
-para o Serviço de Dados no PowerShell:
-
-```powershell
-cd servico-dados
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python app.py
-```
-
-Repita para `servico-processamento` e `servico-relatorios`. Sem Docker, os serviços usam `localhost` como
-padrão e o banco fica em `dados/estoque.db`. As variáveis de ambiente `DB_PATH`, `DADOS_URL` e
-`PROCESSAMENTO_URL` permitem alterar o caminho do banco e os endereços entre os serviços. O frontend
-depende do proxy nginx e, por isso, só funciona pelo Docker Compose.
-
 ## Decisões de projeto e limitações
 
 - **Servidor de desenvolvimento do Flask:** adequado para a demonstração; em produção usaríamos um
@@ -211,5 +193,5 @@ depende do proxy nginx e, por isso, só funciona pelo Docker Compose.
 
 ## Autoria
 
-Henrique Pedrosa Laiter 22008543
-Maria Eduarda Reis Machado 22001129
+- Henrique Pedrosa Laiter
+- Maria Eduarda Reis Machado
